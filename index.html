@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <input type="file" id="file">
+    <canvas></canvas>
+</body>
+<script>
+let eleFile = document.querySelector('#file')
+let reader = new FileReader(), img = new Image()
+let file = null
+
+let canvas = document.querySelector('canvas')
+let context = canvas.getContext('2d')
+img.onload = function() {
+    let originWidth = this.width
+    let originHeight = this.height
+    let maxWidth = 400, maxHeight = 300
+    let targetWidth = originWidth, targetHeight = originHeight
+
+    if(originWidth > maxWidth || originHeight > maxHeight) {
+        if(originWidth / originHeight > maxWidth / maxHeight) {
+            targetWidth = maxWidth
+            targetHeight = Math.round(maxWidth * (originHeight / originWidth))
+        } else {
+            targetHeight = maxHeight
+            targetWidth = Math.round(maxHeight * (originWidth / originHeight))
+        }
+    }
+    canvas.width = targetWidth
+    canvas.height = targetHeight
+    // 减少一点模糊程度
+    context.translate(0.5, -0.5)
+    context.clearRect(0, 0, targetWidth, targetHeight)
+    context.drawImage(img, 0, 0, targetWidth, targetHeight)
+}
+
+reader.onload = function(e) {
+    img.src = e.target.result
+}
+eleFile.addEventListener('change', function(event) {
+    file = event.target.files[0]
+    if(file.type.indexOf('image') == 0) {
+        reader.readAsDataURL(file)
+    }
+})
+
+</script>
+</html>
